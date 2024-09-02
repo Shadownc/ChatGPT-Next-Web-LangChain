@@ -977,6 +977,11 @@ function _Chat() {
         }
       });
 
+      // enter to password
+      if (!accessStore.isAuthorized()) {
+        navigate(Path.Auth);
+      }
+
       // auto sync mask config from global config
       if (session.mask.syncGlobalConfig) {
         console.log("[Mask] syncing from global, name = ", session.mask.name);
