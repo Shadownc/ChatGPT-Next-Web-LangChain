@@ -142,7 +142,7 @@ export function PreCode(props: { children: any }) {
       renderArtifacts();
       return () => observer.disconnect();
     }
-  }, []);
+  }, [renderArtifacts]);
 
   return (
     <>
@@ -274,7 +274,7 @@ function tryWrapHtmlCode(text: string) {
     );
 }
 
-function _MarkDownContent(props: {
+function MarkDownContent(props: {
   content: string;
   webSearchReferences?: TavilySearchResponse;
 }) {
@@ -292,16 +292,18 @@ function _MarkDownContent(props: {
   return (
     <ReactMarkdown
       remarkPlugins={[RemarkMath, RemarkGfm, RemarkBreaks]}
-      rehypePlugins={[
-        RehypeKatex,
+      rehypePlugins={
         [
-          RehypeHighlight,
-          {
-            detect: false,
-            ignoreMissing: true,
-          },
-        ],
-      ]}
+          RehypeKatex as any,
+          [
+            RehypeHighlight as any,
+            {
+              detect: false,
+              ignoreMissing: true,
+            },
+          ],
+        ] as any
+      }
       components={{
         pre: PreCode,
         code: CustomCode,
@@ -333,7 +335,7 @@ function _MarkDownContent(props: {
   );
 }
 
-export const MarkdownContent = React.memo(_MarkDownContent);
+export const MarkdownContent = React.memo(MarkDownContent);
 
 export function Markdown(
   props: {

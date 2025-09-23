@@ -114,7 +114,7 @@ import {
   List,
   ListItem,
   Modal,
-  SearchSelector,
+  ModelSelectorModal,
   Selector,
   showConfirm,
   showPrompt,
@@ -599,12 +599,11 @@ export function ChatActions(props: {
 
   const currentModelName = useMemo(() => {
     const model = models.find(
-      (m) =>
-        m.name == currentModel &&
-        m?.provider?.providerName == currentProviderName,
+      (m) => m.name == currentModel,
+      // && m?.provider?.providerName == currentProviderName,
     );
     return model?.displayName ?? "";
-  }, [models, currentModel, currentProviderName]);
+  }, [models, currentModel]);
   const [showModelSelector, setShowModelSelector] = useState(false);
   const [showPluginSelector, setShowPluginSelector] = useState(false);
   const [showUploadImage, setShowUploadImage] = useState(false);
@@ -831,16 +830,8 @@ export function ChatActions(props: {
         )}
 
         {showModelSelector && (
-          <SearchSelector
+          <ModelSelectorModal
             defaultSelectedValue={`${currentModel}@${currentProviderName}`}
-            items={models.map((m) => ({
-              title: `${m.displayName}${
-                m?.provider?.providerName && !isDisableModelProviderDisplay
-                  ? "(" + m?.provider?.providerName + ")"
-                  : ""
-              }`,
-              value: `${m.name}@${m?.provider?.providerName}`,
-            }))}
             onClose={() => setShowModelSelector(false)}
             onSelection={(s) => {
               if (s.length === 0) return;
@@ -1182,7 +1173,7 @@ export function ShortcutKeyModal(props: { onClose: () => void }) {
   );
 }
 
-function _Chat() {
+function Chat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
 
   const chatStore = useChatStore();
@@ -2001,7 +1992,7 @@ function _Chat() {
                   icon={<RenameIcon />}
                   bordered
                   title={Locale.Chat.EditMessage.Title}
-                  aria={Locale.Chat.EditMessage.Title}
+                  ariaLabel={Locale.Chat.EditMessage.Title}
                   onClick={() => setIsEditingMessage(true)}
                 />
               </div>
@@ -2022,7 +2013,7 @@ function _Chat() {
                   icon={config.tightBorder ? <MinIcon /> : <MaxIcon />}
                   bordered
                   title={Locale.Chat.Actions.FullScreen}
-                  aria={Locale.Chat.Actions.FullScreen}
+                  ariaLabel={Locale.Chat.Actions.FullScreen}
                   onClick={() => {
                     config.update(
                       (config) => (config.tightBorder = !config.tightBorder),
@@ -2078,7 +2069,7 @@ function _Chat() {
                             <div className={styles["chat-message-edit"]}>
                               <IconButton
                                 icon={<EditIcon />}
-                                aria={Locale.Chat.Actions.Edit}
+                                ariaLabel={Locale.Chat.Actions.Edit}
                                 onClick={async () => {
                                   const newMessage = await showPrompt(
                                     Locale.Chat.Actions.Edit,
@@ -2540,8 +2531,10 @@ function _Chat() {
   );
 }
 
-export function Chat() {
+function InternalChat() {
   const chatStore = useChatStore();
   const sessionIndex = chatStore.currentSessionIndex;
-  return <_Chat key={sessionIndex}></_Chat>;
+  return <Chat key={sessionIndex}></Chat>;
 }
+
+export { InternalChat as Chat };
